@@ -25,8 +25,7 @@ describe CarrierWave::Vips do
     it "should convert from one format to another" do
       @instance.convert('png')
       @instance.process!
-      img = ::VIPS::Image.new(@instance.current_path)
-      img.format.should =~ /PNG/
+      img.send(:format).should =~ /PNG/
     end
   end
 

@@ -185,13 +185,14 @@ module CarrierWave
       ratio = get_ratio image, width, height, min_or_max
 
       if jpeg? # find the shrink ratio for loading
-        i = 20
-        i -= 1 while (i > 0 && ratio > 1.0 / i)
-        i = 1 if i < 2
-        image = VIPS::Image.jpeg current_path, shrink_factor: i, sequential: true
+        shrink_factors = [8,4,2,1]
+        shrink_factor = nil
+        shrink_factors.each { |sf| shrink_factor = sf if ratio < 1.0 / sf }
+        shrink_factor ||= shrink_factors[-1]
+        image = VIPS::Image.jpeg current_path, shrink_factor: shrink_factor, sequential: true
         ratio = get_ratio image, width, height, min_or_max
       elsif png?
-        image = VIPS::Image.png path, :sequential => true
+        image = VIPS::Image.png curren_path, :sequential => true
       end
       
       if ratio > 1
