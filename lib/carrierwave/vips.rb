@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module CarrierWave
   module Vips
     
@@ -181,6 +183,16 @@ module CarrierWave
     def resize_image(image, width, height, min_or_max = :min)
       
       ratio = get_ratio image, width, height, min_or_max
+
+      if jpeg? # find the shrink ratio for loading
+        i = 20
+        i -= 1 while (i > 0 && ratio > 1.0 / i)
+        i = 1 if i < 2
+        image = VIPS::Image.jpeg current_path, shrink_factor: i, sequential: true
+        ratio = get_ratio image, width, height, min_or_max
+      elsif png?
+        image = VIPS::Image.png path, :sequential => true
+      end
       
       if ratio > 1
         image = image.affinei_resize :nearest, ratio
@@ -190,6 +202,7 @@ module CarrierWave
           ratio = get_ratio image, width, height, min_or_max
         end
         image = image.affinei_resize :bilinear, ratio unless ratio == 1
+        image = image.tile_cache(image.x_size, 1, 30)
         image = image.conv SHARPEN_MASK
       end
       
@@ -201,6 +214,14 @@ module CarrierWave
       width_ratio = width.to_f / image.x_size
       height_ratio = height.to_f / image.y_size
       [width_ratio, height_ratio].send(min_or_max)
+    end
+
+    def jpeg?(path = current_path)
+      path =~ /.*jpg$/i or path =~ /.*jpeg$/i
+    end
+
+    def png?(path = current_path)
+      path =~ /.*png$/i
     end
     
 
