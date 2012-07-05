@@ -7,7 +7,7 @@ module CarrierWave
         [ -1, 16, -1 ],
         [ -1, -1, -1 ]
       ]
-      VIPS::Mask.new conv_mask, 8
+      ::VIPS::Mask.new conv_mask, 8
     end
     
     def self.included(base)

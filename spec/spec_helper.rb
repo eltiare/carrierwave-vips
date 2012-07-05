@@ -8,20 +8,7 @@ require 'time'
 require 'logger'
 
 require 'carrierwave'
-require 'timecop'
-require 'open-uri'
-require 'sham_rack'
-
-require 'mysql2'
-
-require 'fog'
-require 'storage/fog_helper'
-
-unless ENV['REMOTE'] == 'true'
-  Fog.mock!
-end
-
-require 'fog_credentials' # after Fog.mock!
+require 'carrierwave-vips'
 
 CARRIERWAVE_DIRECTORY = "carrierwave#{Time.now.to_i}" unless defined?(CARRIERWAVE_DIRECTORY)
 

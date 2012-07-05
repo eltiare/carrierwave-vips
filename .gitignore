@@ -10,3 +10,4 @@ spec/test.log
 .bundle
 Gemfile.lock
 .idea/*
+*.gem
