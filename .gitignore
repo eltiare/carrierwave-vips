@@ -1,0 +1,12 @@
+doc
+.yardoc
+.DS_Store
+spec/public
+pkg
+doc
+spec/test.log
+*.swp
+.rvmrc
+.bundle
+Gemfile.lock
+.idea/*
