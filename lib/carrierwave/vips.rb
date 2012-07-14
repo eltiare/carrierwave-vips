@@ -192,7 +192,7 @@ module CarrierWave
         image = VIPS::Image.jpeg current_path, shrink_factor: shrink_factor, sequential: true
         ratio = get_ratio image, width, height, min_or_max
       elsif png?
-        image = VIPS::Image.png curren_path, :sequential => true
+        image = VIPS::Image.png current_path, :sequential => true
       end
       
       if ratio > 1
