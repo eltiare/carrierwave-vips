@@ -201,10 +201,10 @@ module CarrierWave
       elsif ratio < 1
         if ratio <= 0.5
           image = image.shrink((1/ratio).floor)
+          image = image.tile_cache(image.x_size, 1, 30)
           ratio = get_ratio image, width, height, min_or_max
         end
         image = image.affinei_resize :bilinear, ratio unless ratio == 1
-        image = image.tile_cache(image.x_size, 1, 30)
         image = image.conv SHARPEN_MASK
       end
 
