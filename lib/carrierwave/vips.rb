@@ -194,7 +194,7 @@ module CarrierWave
       elsif png?
         image = VIPS::Image.png current_path, :sequential => true
       end
-      
+
       if ratio > 1
         image = image.affinei_resize :nearest, ratio
       elsif ratio < 1
@@ -202,11 +202,11 @@ module CarrierWave
           image = image.shrink((1/ratio).floor)
           ratio = get_ratio image, width, height, min_or_max
         end
-        image = image.affinei_resize :bilinear, ratio unless ratio == 1
         image = image.tile_cache(image.x_size, 1, 30)
+        image = image.affinei_resize :bilinear, ratio unless ratio == 1
         image = image.conv SHARPEN_MASK
       end
-      
+
       image
     
     end
