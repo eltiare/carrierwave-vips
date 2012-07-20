@@ -189,7 +189,8 @@ module CarrierWave
         shrink_factor = nil
         shrink_factors.each { |sf| shrink_factor = sf if ratio < 1.0 / sf }
         shrink_factor ||= shrink_factors[-1]
-        image = VIPS::Image.jpeg current_path, shrink_factor: shrink_factor, sequential: true
+        image = VIPS::Image.jpeg current_path, 
+            :shrink_factor => shrink_factor, :sequential => true
         ratio = get_ratio image, width, height, min_or_max
       elsif png?
         image = VIPS::Image.png current_path, :sequential => true
