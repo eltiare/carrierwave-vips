@@ -1,13 +1,5 @@
 # encoding: utf-8
 
-require 'logger'
-
-# disable logging
-# $log = Logger.new "/tmp/cw.log"
-$log = Logger.new nil
-
-$log.level = Logger::DEBUG
-
 module CarrierWave
   module Vips
     
@@ -189,62 +181,35 @@ module CarrierWave
   private
     
     def resize_image(image, width, height, min_or_max = :min)
-      $log.info "resize_image: image size #{image.x_size} #{image.y_size}"
-      $log.info "resize_image: target size #{width} #{height}"
-      $log.info "resize_image: min_or_max #{min_or_max}"
-      
       ratio = get_ratio image, width, height, min_or_max
-
       if jpeg? # find the shrink ratio for loading
-        $log.info "resize_image: reloading jpg in seq mode"
-
         shrink_factor = [8, 4, 2, 1].find {|sf| 1.0 / ratio >= sf }
         shrink_factor = 1 if shrink_factor == nil
-
-        $log.info "resize_image: shrink_factor #{shrink_factor}"
-
         image = VIPS::Image.jpeg current_path, 
             :shrink_factor => shrink_factor, :sequential => true
-
         ratio = get_ratio image, width, height, min_or_max
       elsif png?
-        $log.info "resize_image: reloading png in seq mode"
-
         image = VIPS::Image.png current_path, :sequential => true
       end
-
       if ratio > 1
-        $log.info "resize_image: upsizing with nearest-neighbor"
-
         image = image.affinei_resize :nearest, ratio
-      elsif ratio < 1
+      else
         if ratio <= 0.5
           factor = (1.0 / ratio).floor
-
-          $log.info "resize_image: block shrink by #{factor}"
-
           image = image.shrink(factor)
           image = image.tile_cache(image.x_size, 1, 30)
           ratio = get_ratio image, width, height, min_or_max
         end
-
-        $log.info "resize_image: bicubic resample by #{ratio}"
-
         image = image.affinei_resize :bilinear, ratio unless ratio == 1
-
-        $log.info "resize_image: sharpening"
         image = image.conv SHARPEN_MASK
       end
-
       image
-    
     end
     
     def get_ratio(image, width,height, min_or_max = :min)
       width_ratio = width.to_f / image.x_size
       height_ratio = height.to_f / image.y_size
       ratio = [width_ratio, height_ratio].send(min_or_max)
-      $log.info "get_ratio: #{ratio}"
       ratio
     end
 
@@ -255,7 +220,6 @@ module CarrierWave
     def png?(path = current_path)
       path =~ /.*png$/i
     end
-    
 
   end # Vips
 end # CarrierWave
