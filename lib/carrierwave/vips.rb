@@ -57,12 +57,12 @@ module CarrierWave
     #
     #
     # === Parameters
-    # [f (String)] the format for the file format (jpeg, png, gif)
+    # [f (String)] the format for the file format (jpeg, png)
     # [opts (Hash)] options to be passed to converting function (ie, :interlace => true for png)
     #
     def convert(f, opts = {})
       f = f.to_s.downcase
-      allowed = %w(jpeg png gif)
+      allowed = %w(jpeg png)
       raise ArgumentError, "Format must be one of: #{allowed.join(',')}" unless allowed.include?(f)
       @_format = f
       @_format_opts = opts
