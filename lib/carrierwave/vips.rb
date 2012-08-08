@@ -36,6 +36,10 @@ module CarrierWave
       def convert(extension)
         process :convert => extension
       end
+
+      def strip
+        process :strip
+      end
     end
 
     ##
@@ -51,7 +55,19 @@ module CarrierWave
         image
       end
     end
-    
+
+    ##
+    # Remove all exif and icc data when writing to a file. This method does
+    # not actually remove any metadata but rather marks it to be removed when
+    # writing the file.
+    #
+    def strip
+      manipulate! do |image|
+        @_strip = true
+        image
+      end
+    end
+
     ##
     # Convert the file to a different format
     #
@@ -161,25 +177,39 @@ module CarrierWave
     rescue => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate file, maybe it is not an image? Original Error: #{e}")
     end
-    
+
     def process!(*)
       ret = super
       if @_vimage
         tmp_name = current_path.sub(/(\.[a-z]+)$/i, '_tmp\1')
-        if @_format
-          @vimage.send(format, tmp_name, @_format_opts)
-        else
-          @_vimage.write(tmp_name)
+        @_writer = writer_class.send(:new, @_vimage, @_format_opts)
+
+        if @_strip
+          @_writer.remove_exif
+          @_writer.remove_icc
         end
+        @_writer.write(tmp_name)
+
         FileUtils.mv(tmp_name, current_path)
         @_vimage = nil
         @_format = nil
       end
       ret
     end
-    
+
   private
-    
+
+    def writer_class
+      case @_format
+      when 'jpeg'
+        VIPS::JPEGWriter
+      when 'png'
+        VIPS::PNGWriter
+      else
+        VIPS::Writer
+      end
+    end
+
     def resize_image(image, width, height, min_or_max = :min)
       ratio = get_ratio image, width, height, min_or_max
       if jpeg? # find the shrink ratio for loading
