@@ -192,6 +192,8 @@ module CarrierWave
 
         FileUtils.mv(tmp_name, current_path)
         @_vimage = nil
+        @_writer = nil
+        @_strip  = nil
         @_format = nil
       end
       ret
