@@ -34,6 +34,6 @@ In order to use the strip method, you must have a recent version of libvips. Tes
 
 Contributors
 ---------------------
-John Cupitt (@jcupitt)
-Mario Visic (@mariovisic)
+* John Cupitt (@jcupitt)
+* Mario Visic (@mariovisic)
 
