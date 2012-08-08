@@ -71,4 +71,18 @@ describe CarrierWave::Vips do
     end
   end
 
+  describe '#strip' do
+    it "should strip all exif and icc data from the image" do
+      @instance.strip
+      @instance.process!
+      VIPS::Image.new(@instance.current_path).exif.should_not include 'ACD Systems Digital Imaging'
+    end
+
+    it "should strip out exif and icc data from images that are being converted" do
+      @instance.convert('jpeg')
+      @instance.strip
+      @instance.process!
+      VIPS::Image.new(@instance.current_path).exif.should_not include 'ACD Systems Digital Imaging'
+    end
+  end
 end
