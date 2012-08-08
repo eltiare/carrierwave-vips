@@ -33,7 +33,7 @@ to include the Vips module in the upload class:
       include CarrierWave::Vips
     end
 
-You can use the following methods to resize your images. All methods keep
+You can use the following methods to change your images. All methods keep
 aspect ratio:
 
 * `resize_to_fill(x,y)` Will increase/decrease the size of the image and match the specified dimensions exactly, chopping off any extraneous bits.
