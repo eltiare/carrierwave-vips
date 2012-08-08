@@ -5,7 +5,24 @@ This adds support to CarrierWave for the ultrafast and resource efficient
 VIPS library. It is ready for production - but if you do encounter any
 problems please be sure to report them on Github so that we can fix them.
 
-A quick overview:
+Installation
+---------------------
+    gem install carrierwave-vips
+
+At this time CarrierWave is not automatically installed with carrierwave-vips. If you have not yet installed it, run:
+
+    gem install carrierwave
+
+You will also need ruby-vips. For instructions on how to install that see the repo: https://github.com/jcupitt/ruby-vips
+
+If you are using bundler, add this to your Gemfile:
+
+    gem 'ruby-vips'
+    gem 'carrierwave'
+    gem 'carrierwave-vips'
+
+
+A quick overview
 ---------------------
 
 See the instructions for CarrierWave to use this processor. You will need
