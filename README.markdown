@@ -29,3 +29,11 @@ aspect ratio:
 * `strip` Removes any exif and ICC metadata contained in the image to reduce filesize.
 
 Please note that GIF is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library.
+
+In order to use the strip method, you must have a recent version of libvips. Tested on 7.30 on Debian
+
+Contributors
+---------------------
+John Cupitt (@jcupitt)
+Mario Visic (@mariovisic)
+
