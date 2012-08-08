@@ -28,9 +28,9 @@ aspect ratio:
 * `quality(0-100)` Sets the quality of the image being saved if JPEG
 * `strip` Removes any exif and ICC metadata contained in the image to reduce filesize.
 
-Please note that GIF is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library.
+Please note that GIF writing is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library. GIF reading is still supported.
 
-In order to use the strip method, you must have a recent version of libvips. Tested on 7.30 on Debian
+In order to use the strip method, a recent version of libvips is required. Tested on 7.30 on Debian
 
 Contributors
 ---------------------
