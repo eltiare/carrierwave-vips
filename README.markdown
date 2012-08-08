@@ -2,10 +2,8 @@ CarrierWave-VIPS
 ======================
 
 This adds support to CarrierWave for the ultrafast and resource efficient
-VIPS library. It passes all of the rspec tests with the exception of one,
-which is due to a change in the API of the ruby-vips gem. The confidence
-level of this CWV is currently at 90%.  That being said, please verify the
-output of this processor thoroughly before deploying to production.
+VIPS library. It is ready for production - but if you do encounter any
+problems please be sure to report them on Github so that we can fix them.
 
 A quick overview:
 ---------------------
