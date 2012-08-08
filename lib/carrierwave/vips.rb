@@ -182,19 +182,14 @@ module CarrierWave
       ret = super
       if @_vimage
         tmp_name = current_path.sub(/(\.[a-z]+)$/i, '_tmp\1')
-        @_writer = writer_class.send(:new, @_vimage, @_format_opts)
-
+        writer = writer_class.send(:new, @_vimage, @_format_opts)
         if @_strip
-          @_writer.remove_exif
-          @_writer.remove_icc
+          writer.remove_exif
+          writer.remove_icc
         end
-        @_writer.write(tmp_name)
-
+        writer.write(tmp_name)
         FileUtils.mv(tmp_name, current_path)
         @_vimage = nil
-        @_writer = nil
-        @_strip  = nil
-        @_format = nil
       end
       ret
     end

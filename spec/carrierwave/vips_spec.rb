@@ -25,7 +25,10 @@ describe CarrierWave::Vips do
     it "should convert from one format to another" do
       @instance.convert('png')
       @instance.process!
-      img.send(:format).should =~ /PNG/
+    end
+
+    it "should throw an error on gif" do
+      lambda { @instance.convert('gif') }.should raise_error(ArgumentError)
     end
   end
 
