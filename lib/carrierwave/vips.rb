@@ -206,6 +206,7 @@ module CarrierWave
 
     def resize_image(image, width, height, min_or_max = :min)
       ratio = get_ratio image, width, height, min_or_max
+      return image if ratio == 1
       if jpeg? # find the shrink ratio for loading
         shrink_factor = [8, 4, 2, 1].find {|sf| 1.0 / ratio >= sf }
         shrink_factor = 1 if shrink_factor == nil
