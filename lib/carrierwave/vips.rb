@@ -6,10 +6,10 @@ module CarrierWave
     SHARPEN_MASK = begin
       conv_mask = [
         [ -1, -1, -1 ],
-        [ -1, 16, -1 ],
+        [ -1, 24, -1 ],
         [ -1, -1, -1 ]
       ]
-      ::VIPS::Mask.new conv_mask, 8
+      ::VIPS::Mask.new conv_mask, 16
     end
     
     def self.included(base)
@@ -224,17 +224,16 @@ module CarrierWave
           image = image.tile_cache(image.x_size, 1, 30)
           ratio = get_ratio image, width, height, min_or_max
         end
-        image = image.affinei_resize :bilinear, ratio unless ratio == 1
+        image = image.affinei_resize :bicubic, ratio
         image = image.conv SHARPEN_MASK
       end
       image
     end
-    
+
     def get_ratio(image, width,height, min_or_max = :min)
       width_ratio = width.to_f / image.x_size
       height_ratio = height.to_f / image.y_size
-      ratio = [width_ratio, height_ratio].send(min_or_max)
-      ratio
+      [width_ratio, height_ratio].send(min_or_max)
     end
 
     def jpeg?(path = current_path)
