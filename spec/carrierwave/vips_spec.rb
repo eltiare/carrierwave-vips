@@ -130,7 +130,7 @@ describe CarrierWave::Vips do
     end
 
     it "does not run out of file descriptors when used in conjunction with DataMapper", slow: true do
-      1100.times {
+      2000.times {
         dummy = Dummy.new
         dummy.image = File.open(file_path('landscape.jpg'))
         dummy.save
