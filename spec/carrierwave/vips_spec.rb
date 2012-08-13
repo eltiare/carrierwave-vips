@@ -20,11 +20,11 @@ class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::Vips
 
   version :big_thumb do
-    process resize_to_fill: [800,800]
+    process :resize_to_fill => [800,800]
   end
 
   version :thumb do
-    process resize_to_fill: [280, 280]
+    process :resize_to_fill => [280, 280]
   end
 
   def store_dir
@@ -120,7 +120,7 @@ describe CarrierWave::Vips do
     end
   end
 
-  describe '#process!', slow: true do
+  describe '#process!', :slow => true do
     it "does not run out of file descriptors on long batch runs" do
       2000.times {
         instance = create_instance
@@ -129,7 +129,7 @@ describe CarrierWave::Vips do
       }
     end
 
-    it "does not run out of file descriptors when used in conjunction with DataMapper", slow: true do
+    it "does not run out of file descriptors when used in conjunction with DataMapper", :slow => true do
       2000.times {
         dummy = Dummy.new
         dummy.image = File.open(file_path('landscape.jpg'))

@@ -3,8 +3,8 @@ gemspec
 
 gem 'rmagick'
 gem 'carrierwave'
-gem 'carrierwave-datamapper', require: 'carrierwave/datamapper'
-gem 'ruby-vips', require: 'vips'
+gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper'
+gem 'ruby-vips', :require => 'vips'
 
 gem 'rspec'
 

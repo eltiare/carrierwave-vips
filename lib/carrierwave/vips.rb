@@ -2,7 +2,7 @@
 
 module CarrierWave
   module Vips
-    
+
     SHARPEN_MASK = begin
       conv_mask = [
         [ -1, -1, -1 ],
@@ -11,7 +11,7 @@ module CarrierWave
       ]
       ::VIPS::Mask.new conv_mask, 16
     end
-    
+
     def self.included(base)
       base.send(:extend, ClassMethods)
     end
@@ -28,11 +28,11 @@ module CarrierWave
       def resize_to_fill(width, height)
         process :resize_to_fill => [width, height]
       end
-      
+
       def quality(percent)
         process :quality => percent
       end
-      
+
       def convert(extension)
         process :convert => extension
       end
@@ -83,7 +83,7 @@ module CarrierWave
       @_format = f
       @_format_opts = opts
     end
-    
+
     ##
     # Resize the image to fit within the specified dimensions while retaining
     # the original aspect ratio. The image may be shorter or narrower than
@@ -115,9 +115,9 @@ module CarrierWave
     #
     def resize_to_fill(new_width, new_height)
       manipulate! do |image|
-        
+
         image = resize_image image, new_width, new_height, :max
-        
+
         if image.x_size > new_width
           top = 0
           left = (image.x_size - new_width) / 2
@@ -125,9 +125,9 @@ module CarrierWave
           left = 0
           top = (image.y_size - new_height) / 2
         end
-        
+
         image.extract_area(left, top, new_width, new_height)
-        
+
       end
     end
 
