@@ -1,6 +1,8 @@
 CarrierWave-VIPS
 ======================
 
+[![Build Status](https://secure.travis-ci.org/bigeasy/reactor.png?branch=master)](http://travis-ci.org/bigeasy/reactor)
+
 This adds support to CarrierWave for the ultrafast and resource efficient
 VIPS library. It is ready for production - but if you do encounter any
 problems please be sure to report them on Github so that we can fix them.
