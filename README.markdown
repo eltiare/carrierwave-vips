@@ -50,5 +50,7 @@ In order to use the strip method, a recent version of libvips is required. Teste
 Contributors
 ---------------------
 * John Cupitt (@jcupitt)
+* Stanislaw Pankevich (@stanislaw)
 * Mario Visic (@mariovisic)
+
 
