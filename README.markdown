@@ -41,7 +41,7 @@ aspect ratio:
 
 Please note that GIF writing is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library. GIF reading is still supported.
 
-In order to use the strip method, a recent version of libvips is required. Tested on 7.30 on Debian + OS X 10.7.3/HomeBrew
+In order to use the strip method, a recent version of libvips is required. It is recommended to use at least 7.30.2. Tested on 7.30 on Debian + OS X 10.7.3/HomeBrew
 
 Contributors
 ---------------------
