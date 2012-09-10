@@ -124,6 +124,9 @@ module CarrierWave
         elsif image.y_size > new_height
           left = 0
           top = (image.y_size - new_height) / 2
+        else
+          left = 0
+          top = 0
         end
 
         image.extract_area(left, top, new_width, new_height)
