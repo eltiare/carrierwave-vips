@@ -1,6 +1,5 @@
 doc
 .yardoc
-.DS_Store
 spec/public
 pkg
 doc
@@ -9,5 +8,4 @@ spec/test.log
 .rvmrc
 .bundle
 Gemfile.lock
-.idea/*
 *.gem
