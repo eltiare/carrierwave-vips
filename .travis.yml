@@ -7,5 +7,4 @@ gemfile:
   - Gemfile
 before_install:
   - uname -a
-  - ci/python26_hook
   - sudo apt-get install libvips-dev
