@@ -76,7 +76,11 @@ describe CarrierWave::Vips do
       @instance.should have_dimensions(1000, 1000)
     end
 
-    it "does not throw error on exact dimensions"
+    it "does not throw error on exact dimensions" do
+      @instance.resize_to_fill(640,480)
+      @instance.process!
+      @instance.should have_dimensions(640,480)
+    end
 
   end
 
