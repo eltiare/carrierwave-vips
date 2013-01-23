@@ -213,11 +213,8 @@ module CarrierWave
       if jpeg? # find the shrink ratio for loading
         shrink_factor = [8, 4, 2, 1].find {|sf| 1.0 / ratio >= sf }
         shrink_factor = 1 if shrink_factor == nil
-        image = VIPS::Image.jpeg current_path, 
-            :shrink_factor => shrink_factor, :sequential => true
+        image = image.shrink(shrink_factor)
         ratio = get_ratio image, width, height, min_or_max
-      elsif png?
-        image = VIPS::Image.png current_path, :sequential => true
       end
       if ratio > 1
         image = image.affinei_resize :nearest, ratio
