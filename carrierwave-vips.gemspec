@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'carrierwave-vips'
-  s.version     = '1.0.3'
-  s.date        = '2012-09-10'
+  s.version     = '1.0.4'
+  s.date        = '2013-01-28'
   s.summary     = "Adds VIPS support to CarrierWave"
   s.description = "Adds VIPS support to CarrierWave"
   s.authors     = ["Jeremy Nicoll"]
