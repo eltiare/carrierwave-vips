@@ -174,8 +174,14 @@ module CarrierWave
     #
 
     def manipulate!
-      cache_stored_file! if !cached?
-      @_vimage ||= VIPS::Image.new(current_path)
+      cache_stored_file! unless cached?
+      @_vimage ||= if jpeg?
+          VIPS::Image.jpeg(current_path, sequential: true)
+        elsif png?
+          VIPS::Image.png(current_path, sequential: true)
+        else
+          VIPS::Image.new(current_path)
+        end
       @_vimage = yield @_vimage
     rescue => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate file, maybe it is not a supported image? Original Error: #{e}")
@@ -210,12 +216,6 @@ module CarrierWave
     def resize_image(image, width, height, min_or_max = :min)
       ratio = get_ratio image, width, height, min_or_max
       return image if ratio == 1
-      if jpeg? # find the shrink ratio for loading
-        shrink_factor = [8, 4, 2, 1].find {|sf| 1.0 / ratio >= sf }
-        shrink_factor = 1 if shrink_factor == nil
-        image = image.shrink(shrink_factor)
-        ratio = get_ratio image, width, height, min_or_max
-      end
       if ratio > 1
         image = image.affinei_resize :nearest, ratio
       else

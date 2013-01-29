@@ -52,6 +52,9 @@ describe CarrierWave::Vips do
     FileUtils.rm(file_path('landscape_copy.jpg'))
   end
 
+  # Gotta figure out how to test this properly.
+  it "performs multiple operations properly"
+
   describe "#convert" do
     it "converts from one format to another" do
       @instance.convert('png')
