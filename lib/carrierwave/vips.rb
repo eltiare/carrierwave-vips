@@ -176,9 +176,9 @@ module CarrierWave
     def manipulate!
       cache_stored_file! unless cached?
       @_vimage ||= if jpeg?
-          VIPS::Image.jpeg(current_path, sequential: true)
+          VIPS::Image.jpeg(current_path, :sequential => true)
         elsif png?
-          VIPS::Image.png(current_path, sequential: true)
+          VIPS::Image.png(current_path, :sequential => true)
         else
           VIPS::Image.new(current_path)
         end
