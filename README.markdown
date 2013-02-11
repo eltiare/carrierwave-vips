@@ -43,6 +43,10 @@ Please note that GIF writing is not supported by libvips, and therefore cannot b
 
 In order to use the strip method, a recent version of libvips is required. It is recommended to use at least 7.30.2. Tested on 7.30 on Debian + OS X 10.7.3/HomeBrew
 
+Libraries which rely on CarrierWave-VIPS
+---------------------
+* The carrierwave-daltonize gem corrects images for color-blindness: https://github.com/gingerlime/carrierwave-daltonize
+
 Contributors
 ---------------------
 * John Cupitt (@jcupitt)
