@@ -190,7 +190,7 @@ module CarrierWave
     def process!(*)
       ret = super
       if @_vimage
-        tmp_name = current_path.sub(/(\.[a-z]+)$/i, '_tmp\1')
+        tmp_name = current_path.sub(/(\.[[:alnum:]]+)$/i, '_tmp\1')
         writer = writer_class.send(:new, @_vimage, @_format_opts)
         if @_strip
           writer.remove_exif
