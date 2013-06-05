@@ -51,7 +51,7 @@ module CarrierWave
     #
     def quality(percent)
       manipulate! do |image|
-        image.quality = percent if image.respond_to?(:quality=)
+        @_format_opts = { quality: percent } if jpeg? || @_format=='jpeg'
         image
       end
     end
