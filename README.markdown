@@ -35,7 +35,7 @@ aspect ratio:
 * `resize_to_fill(x,y)` Will increase/decrease the size of the image and match the specified dimensions exactly, chopping off any extraneous bits.
 * `resize_to_fit(x,y)` Will increase/decrease the size of the image to fit within the specified dimensions. One dimension may be less than specified.
 * `resize_to_limit(x,y)` Just like resize_to_fit except will not increase size of image.
-* `format("jpeg|png")` Changes the format of the image
+* `convert("jpeg|png")` Changes the format of the image
 * `quality(0-100)` Sets the quality of the image being saved if JPEG
 * `strip` Removes any exif and ICC metadata contained in the image to reduce filesize.
 
