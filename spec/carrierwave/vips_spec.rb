@@ -141,9 +141,13 @@ describe CarrierWave::Vips do
       @instance.auto_orient
     end
 
-    it 'leaves alone for properly oriented photos' do
+    it 'orients properly with related tags' do
       instance = create_instance('landscape-with-orientation.jpg')
       instance.auto_orient
+      instance.process!
+      instance = create_instance('portrait-with-orientation.jpg')
+      instance.auto_orient
+      instance.process!
     end
   end
 

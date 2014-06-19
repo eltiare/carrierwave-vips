@@ -29,8 +29,7 @@ to include the Vips module in the upload class:
       include CarrierWave::Vips
     end
 
-You can use the following methods to change your images. All methods keep
-aspect ratio:
+You can use the following methods to change your images.
 
 * `resize_to_fill(x,y)` Will increase/decrease the size of the image and match the specified dimensions exactly, chopping off any extraneous bits.
 * `resize_to_fit(x,y)` Will increase/decrease the size of the image to fit within the specified dimensions. One dimension may be less than specified.
@@ -38,6 +37,7 @@ aspect ratio:
 * `convert("jpeg|png")` Changes the format of the image
 * `quality(0-100)` Sets the quality of the image being saved if JPEG
 * `strip` Removes any exif and ICC metadata contained in the image to reduce filesize.
+* `auto_orient` Rotates the image according to the Orientation EXIF tag and then removes the tag.
 
 Please note that GIF writing is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library. GIF reading is still supported.
 
