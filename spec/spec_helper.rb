@@ -105,4 +105,7 @@ RSpec.configure do |config|
   config.include CarrierWave::Test::MockStorage
   config.include CarrierWave::Test::I18nHelpers
   config.filter_run_excluding :slow => true unless (ENV['RUN_SLOW'] || '').downcase == 'yes'
+  config.mock_with :rspec do |c|
+    c.syntax = [:should]
+  end
 end

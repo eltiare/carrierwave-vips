@@ -2,15 +2,17 @@
 
 require 'spec_helper'
 
-def create_instance
+def create_instance(file = 'landscape.jpg')
   klass = Class.new do
     include CarrierWave::Uploader::Processing
     include CarrierWave::Vips
   end
 
+  file_copy = file.split('.').insert(-2, 'copy').join('.')
+
   instance = klass.new
-  FileUtils.cp(file_path('landscape.jpg'), file_path('landscape_copy.jpg'))
-  instance.stub(:current_path).and_return(file_path('landscape_copy.jpg'))
+  FileUtils.cp(file_path(file), file_path(file_copy))
+  instance.stub(:current_path).and_return(file_path(file_copy))
   instance.stub(:enable_processing).and_return(true)
   instance.stub(:cached?).and_return true
   instance
@@ -49,7 +51,9 @@ describe CarrierWave::Vips do
   end
 
   after do
-    FileUtils.rm(file_path('landscape_copy.jpg'))
+    Dir[file_path('*.copy.jpg')].each do |file|
+      FileUtils.rm(file)
+    end
   end
 
   # Gotta figure out how to test this properly.
@@ -62,7 +66,7 @@ describe CarrierWave::Vips do
     end
 
     it "throws an error on gif" do
-      lambda { @instance.convert('gif') }.should raise_error(ArgumentError)
+      expect { @instance.convert('gif') }.to raise_error(ArgumentError)
     end
   end
 
@@ -116,6 +120,7 @@ describe CarrierWave::Vips do
   end
 
   describe '#strip' do
+
     it "strips all exif and icc data from the image" do
       @instance.strip
       @instance.process!
@@ -127,6 +132,18 @@ describe CarrierWave::Vips do
       @instance.strip
       @instance.process!
       VIPS::Image.new(@instance.current_path).exif.should_not include 'ACD Systems Digital Imaging'
+    end
+  end
+
+  describe '#auto_orient' do
+
+    it 'runs when EXIF tag is not present' do
+      @instance.auto_orient
+    end
+
+    it 'leaves alone for properly oriented photos' do
+      instance = create_instance('landscape-with-orientation.jpg')
+      instance.auto_orient
     end
   end
 

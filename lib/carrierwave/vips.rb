@@ -40,6 +40,31 @@ module CarrierWave
       def strip
         process :strip
       end
+
+      def auto_orient
+        process :auto_orient
+      end
+    end
+
+    ##
+    # Read the camera EXIF data to determine orientation and adjust accordingly
+    #
+    def auto_orient
+      manipulate! do |image|
+        o = image.get('EXIF-Orientation') rescue '1'
+        case o
+          when '1'
+            # Do nothing, everything is peachy
+          when '6'
+            image.rot270
+          when '8'
+            image.rot180
+          when '3'
+            image.rot90
+          else
+            raise('Invalid value for Orientation: ' + o)
+        end
+      end
     end
 
     ##

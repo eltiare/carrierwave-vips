@@ -13,8 +13,4 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'carrierwave'
   s.add_runtime_dependency 'rmagick'
 
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'dm-core'
-  s.add_development_dependency 'dm-sqlite-adapter'
-  s.add_development_dependency 'dm-migrations'
 end
