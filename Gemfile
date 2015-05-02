@@ -2,7 +2,7 @@ source "https://rubygems.org"
 gemspec
 
 gem 'rmagick'
-gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper', git: 'git@github.com:eltiare/carrierwave-datamapper.git'
+gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper', :github => 'eltiare/carrierwave-datamapper'
 gem 'ruby-vips', :require => 'vips'
 
 gem 'rspec', '2.14.1'
