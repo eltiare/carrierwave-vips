@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.files       = ["lib/carrierwave-vips.rb", "lib/carrierwave/vips.rb"]
   s.homepage   = 'https://github.com/eltiare/carrierwave-vips'
 
-  s.add_runtime_dependency 'ruby-vips', '>=0.2.0'
+  s.add_runtime_dependency 'ruby-vips', '>=1.0.0'
   s.add_runtime_dependency 'carrierwave'
   s.add_runtime_dependency 'rmagick'
 

@@ -124,14 +124,18 @@ describe CarrierWave::Vips do
     it "strips all exif and icc data from the image" do
       @instance.strip
       @instance.process!
-      VIPS::Image.new(@instance.current_path).exif.should_not include 'ACD Systems Digital Imaging'
+      expect {
+        Vips::Image.new(@instance.current_path).get_value("exif-ifd0-Software")
+      }.to raise_error Vips::Error
     end
 
     it "strips out exif and icc data from images that are being converted" do
       @instance.convert('jpeg')
       @instance.strip
       @instance.process!
-      VIPS::Image.new(@instance.current_path).exif.should_not include 'ACD Systems Digital Imaging'
+      expect {
+        Vips::Image.new(@instance.current_path).exif.should_not include 'ACD Systems Digital Imaging'
+      }.to raise_error Vips::Error
     end
   end
 

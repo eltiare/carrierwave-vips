@@ -9,7 +9,7 @@ module CarrierWave
         [ -1, 24, -1 ],
         [ -1, -1, -1 ]
       ]
-      ::VIPS::Mask.new conv_mask, 16
+      ::Vips::Image.new_from_array conv_mask, 16
     end
 
     def self.included(base)
@@ -146,12 +146,12 @@ module CarrierWave
 
         image = resize_image image, new_width, new_height, :max
 
-        if image.x_size > new_width
+        if image.width > new_width
           top = 0
-          left = (image.x_size - new_width) / 2
-        elsif image.y_size > new_height
+          left = (image.width - new_width) / 2
+        elsif image.height > new_height
           left = 0
-          top = (image.y_size - new_height) / 2
+          top = (image.height - new_height) / 2
         else
           left = 0
           top = 0
@@ -175,7 +175,7 @@ module CarrierWave
     #
     def resize_to_limit(new_width, new_height)
       manipulate! do |image|
-        image = resize_image(image,new_width,new_height) if new_width < image.x_size || new_height < image.y_size
+        image = resize_image(image,new_width,new_height) if new_width < image.width || new_height < image.height
         image
       end
     end
@@ -183,7 +183,7 @@ module CarrierWave
     ##
     # Manipulate the image with Vips. Saving of the image is delayed until after
     # all the process blocks have been called. Make sure you always return an
-    # VIPS::Image object from the block
+    # Vips::Image object from the block
     #
     # === Gotcha
     #
@@ -194,7 +194,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [VIPS::Image] for further manipulation
+    # [Vips::Image] for further manipulation
     #
     # === Raises
     #
@@ -203,12 +203,10 @@ module CarrierWave
 
     def manipulate!
       cache_stored_file! unless cached?
-      @_vimage ||= if jpeg?
-          VIPS::Image.jpeg(current_path, :sequential => true)
-        elsif png?
-          VIPS::Image.png(current_path, :sequential => true)
+      @_vimage ||= if jpeg? || png?
+          ::Vips::Image.new_from_file(current_path, access: :sequential)
         else
-          VIPS::Image.new(current_path)
+          ::Vips::Image.new_from_file(current_path)
         end
       @_vimage = yield @_vimage
     rescue => e
@@ -219,12 +217,11 @@ module CarrierWave
       ret = super
       if @_vimage
         tmp_name = current_path.sub(/(\.[[:alnum:]]+)$/i, '_tmp\1')
-        writer = writer_class.send(:new, @_vimage, @_format_opts)
+        format_opts = @_format_opts || {}
         if @_strip
-          writer.remove_exif
-          writer.remove_icc
+          format_opts[:strip] = true
         end
-        writer.write(tmp_name)
+        @_vimage.write_to_file(tmp_name, **format_opts)
         FileUtils.mv(tmp_name, current_path)
         @_vimage = nil
       end
@@ -233,35 +230,21 @@ module CarrierWave
 
   private
 
-    def writer_class
-      case @_format
-        when 'jpeg' then VIPS::JPEGWriter
-        when 'png' then VIPS::PNGWriter
-        else VIPS::Writer
-      end
-    end
-
     def resize_image(image, width, height, min_or_max = :min)
       ratio = get_ratio image, width, height, min_or_max
       return image if ratio == 1
       if ratio > 1
-        image = image.affinei_resize :nearest, ratio
+        image = image.resize(ratio, kernel: :nearest)
       else
-        if ratio <= 0.5
-          factor = (1.0 / ratio).floor
-          image = image.shrink(factor)
-          image = image.tile_cache(image.x_size, 1, 30)
-          ratio = get_ratio image, width, height, min_or_max
-        end
-        image = image.affinei_resize :bicubic, ratio
+        image = image.resize(ratio, kernel: :cubic)
         image = image.conv SHARPEN_MASK
       end
       image
     end
 
     def get_ratio(image, width,height, min_or_max = :min)
-      width_ratio = width.to_f / image.x_size
-      height_ratio = height.to_f / image.y_size
+      width_ratio = width.to_f / image.width
+      height_ratio = height.to_f / image.height
       [width_ratio, height_ratio].send(min_or_max)
     end
 
