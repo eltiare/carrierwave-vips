@@ -105,11 +105,14 @@ module CarrierWave
     # [opts (Hash)] options to be passed to converting function (ie, :interlace => true for png)
     #
     def convert(f, opts = {})
-      f = f.to_s.downcase
-      allowed = %w(jpeg png)
-      raise ArgumentError, "Format must be one of: #{allowed.join(',')}" unless allowed.include?(f)
-      @_format = f
-      @_format_opts = opts
+      manipulate! do |image|
+        f = f.to_s.downcase
+        allowed = %w(jpeg png)
+        raise ArgumentError, "Format must be one of: #{allowed.join(',')}" unless allowed.include?(f)
+        @_format = f
+        @_format_opts = opts
+        image
+      end
     end
 
     ##
