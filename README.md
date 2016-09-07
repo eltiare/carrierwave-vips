@@ -19,6 +19,8 @@ You will also need ruby-vips for VIPS 8. If you need support for VIPS 7 please i
 If you are using bundler, add this to your Gemfile:
 
     gem 'carrierwave-vips'
+    
+You will need to install the `rmagick` gem if you want to load GIF files. Writing GIFs is not supported by ruby-vips or this library.
 
 
 A quick overview
@@ -40,8 +42,6 @@ You can use the following methods to change your images.
 * `quality(0-100)` Sets the quality of the image being saved if JPEG
 * `strip` Removes any exif and ICC metadata contained in the image to reduce filesize.
 * `auto_orient` Rotates the image according to the Orientation EXIF tag and then removes the tag.
-
-Please note that GIF writing is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library. GIF reading is still supported if you load the RMagick gem.
 
 To see how vips stands up to other image processing libraries, see this benchmark:  https://github.com/stanislaw/carrierwave-vips-benchmarks
 
