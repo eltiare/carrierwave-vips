@@ -3,16 +3,18 @@ CarrierWave-VIPS
 
 [![Build Status](https://secure.travis-ci.org/eltiare/carrierwave-vips.png?branch=master)](http://travis-ci.org/eltiare/carrierwave-vips)
 
+Debian does not have a library for VIPS 8 yet. As soon as I can work out how to get it in a Travis build the tests should pass. In the meantime you can clones this repo yourself and run `rspec` in the base directory.
+
 This adds support to CarrierWave for the ultrafast and resource efficient
-VIPS library. It is ready for production - but if you do encounter any
-problems please be sure to report them on Github so that we can fix them.
+VIPS library.
+
 
 Installation
 ---------------------
 
     gem install carrierwave-vips
 
-You will also need ruby-vips. For instructions on how to install that see the repo: https://github.com/jcupitt/ruby-vips
+You will also need ruby-vips for VIPS 8. If you need support for VIPS 7 please install a 1.0.x version of this library. For instructions on how to install that see the repo: https://github.com/jcupitt/ruby-vips
 
 If you are using bundler, add this to your Gemfile:
 
@@ -55,3 +57,4 @@ Contributors
 * John Cupitt (@jcupitt)
 * Stanislaw Pankevich (@stanislaw)
 * Mario Visic (@mariovisic)
+* Thom van Kalkeren (@fletcher91)
