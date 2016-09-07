@@ -3,7 +3,7 @@ CarrierWave-VIPS
 
 [![Build Status](https://secure.travis-ci.org/eltiare/carrierwave-vips.png?branch=master)](http://travis-ci.org/eltiare/carrierwave-vips)
 
-Debian does not have a library for VIPS 8 yet. As soon as I can work out how to get it in a Travis build the tests should pass. In the meantime you can clones this repo yourself and run `rspec` in the base directory.
+Debian does not have a library for VIPS 8 yet. As soon as I can work out how to get it in a Travis build the tests should pass. In the meantime you can clone this repo yourself and run `rspec` in the base directory.
 
 This adds support to CarrierWave for the ultrafast and resource efficient
 VIPS library.
@@ -41,9 +41,7 @@ You can use the following methods to change your images.
 * `strip` Removes any exif and ICC metadata contained in the image to reduce filesize.
 * `auto_orient` Rotates the image according to the Orientation EXIF tag and then removes the tag.
 
-Please note that GIF writing is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library. GIF reading is still supported.
-
-In order to use the strip method, a recent version of libvips is required. It is recommended to use at least 7.30.2. Tested on 7.30 on Debian + OS X 10.7.3/HomeBrew
+Please note that GIF writing is not supported by libvips, and therefore cannot be supported by ruby-vips nor this library. GIF reading is still supported if you load the RMagick gem.
 
 To see how vips stands up to other image processing libraries, see this benchmark:  https://github.com/stanislaw/carrierwave-vips-benchmarks
 
