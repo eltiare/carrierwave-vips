@@ -7,5 +7,4 @@ spec/test.log
 *.swp
 .rvmrc
 .bundle
-Gemfile.lock
 *.gem

@@ -1,11 +1,8 @@
 source "https://rubygems.org"
 gemspec
 
-gem 'rmagick'
-gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper', git: 'git@github.com:eltiare/carrierwave-datamapper.git'
 gem 'ruby-vips', :require => 'vips'
-
-gem 'rspec', '2.14.1'
-gem 'dm-core'
-gem 'dm-sqlite-adapter'
-gem 'dm-migrations'
+gem 'carrierwave', git: 'https://github.com/carrierwaveuploader/carrierwave.git'
+gem 'rspec', '~> 3.5.0'
+gem 'activerecord', '~> 5.0.0'
+gem 'sqlite3'

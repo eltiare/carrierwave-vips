@@ -7,11 +7,12 @@ require 'tempfile'
 require 'time'
 require 'logger'
 
+require 'active_record'
 require 'carrierwave'
-require 'carrierwave-vips'
-require 'dm-core'
-require 'dm-migrations'
-require 'carrierwave/datamapper'
+require 'carrierwave/orm/activerecord'
+
+
+ActiveRecord::Base.establish_connection( adapter:  'sqlite3', database: ':memory:' )
 
 CARRIERWAVE_DIRECTORY = "carrierwave#{Time.now.to_i}" unless defined?(CARRIERWAVE_DIRECTORY)
 
@@ -97,15 +98,11 @@ module CarrierWave
   end
 end
 
-DataMapper.setup(:default, 'sqlite::memory:')
-
 RSpec.configure do |config|
   config.include CarrierWave::Test::Matchers
   config.include CarrierWave::Test::MockFiles
   config.include CarrierWave::Test::MockStorage
   config.include CarrierWave::Test::I18nHelpers
-  config.filter_run_excluding :slow => true unless (ENV['RUN_SLOW'] || '').downcase == 'yes'
-  config.mock_with :rspec do |c|
-    c.syntax = [:should]
-  end
+  config.mock_with :rspec
+  config.filter_run_excluding slow: true
 end
