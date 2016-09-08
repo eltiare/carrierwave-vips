@@ -123,7 +123,7 @@ describe CarrierWave::Vips do
     it 'strips all exif and icc data from the image' do
       instance.strip
       instance.process!
-      image = Vips::Image.new_from_file(instance.current_path)
+      image = Vips::Image.new_from_buffer(File.open(instance.current_path, 'rb').read, '')
       expect { image.get_value('exif-ifd0-Software') }.to raise_error(Vips::Error)
     end
 
@@ -131,7 +131,7 @@ describe CarrierWave::Vips do
       instance.convert('jpeg')
       instance.strip
       instance.process!
-      image = Vips::Image.new_from_file(instance.current_path)
+      image = Vips::Image.new_from_buffer(File.open(instance.current_path, 'rb').read, '')
       expect { image.get_value('exif-ifd0-Software') }.to raise_error(Vips::Error)
     end
 
