@@ -78,10 +78,8 @@ module CarrierWave
     # [percent (Integer)] quality from 0 to 100
     #
     def quality(percent)
-      manipulate! do |image|
-        @_format_opts = { :quality => percent } if jpeg? || @_format=='jpeg'
-        image
-      end
+      write_opts[:Q] = percent
+      get_image
     end
 
     ##
@@ -90,10 +88,8 @@ module CarrierWave
     # writing the file.
     #
     def strip
-      manipulate! do |image|
-        @_strip = true
-        image
-      end
+      write_opts[:strip] = true
+      get_image
     end
 
     ##
@@ -105,11 +101,14 @@ module CarrierWave
     # [opts (Hash)] options to be passed to converting function (ie, :interlace => true for png)
     #
     def convert(f, opts = {})
+      opts = opts.dup
       f = f.to_s.downcase
-      allowed = %w(jpeg png)
+      allowed = %w(jpeg jpg png)
       raise ArgumentError, "Format must be one of: #{allowed.join(',')}" unless allowed.include?(f)
-      @_format = f
-      @_format_opts = opts
+      self.format_override = f == 'jpeg' ? 'jpg' : f
+      opts[:Q] = opts.delete(:quality) if opts.has_key?(:quality)
+      write_opts.merge!(opts)
+      get_image
     end
 
     ##
@@ -187,8 +186,8 @@ module CarrierWave
     #
     # === Gotcha
     #
-    # This method assumes that the object responds to +current_path+.
-    # Any class that this module is mixed into must have a +current_path+ method.
+    # This method assumes that the object responds to +current_path+ and +file+.
+    # Any class that this module is mixed into must have a +current_path+ and a +file+ method.
     # CarrierWave::Uploader does, so you won't need to worry about this in
     # most cases.
     #
@@ -202,12 +201,7 @@ module CarrierWave
     #
 
     def manipulate!
-      cache_stored_file! unless cached?
-      @_vimage ||= if jpeg? || png?
-          ::Vips::Image.new_from_file(current_path, access: :sequential)
-        else
-          ::Vips::Image.new_from_file(current_path)
-        end
+      @_vimage ||= get_image
       @_vimage = yield @_vimage
     rescue => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate file, maybe it is not a supported image? Original Error: #{e}")
@@ -216,19 +210,39 @@ module CarrierWave
     def process!(*)
       ret = super
       if @_vimage
-        tmp_name = current_path.sub(/(\.[[:alnum:]]+)$/i, '_tmp\1')
-        format_opts = @_format_opts || {}
-        if @_strip
-          format_opts[:strip] = true
-        end
-        @_vimage.write_to_file(tmp_name, **format_opts)
+        ext_regex = /(\.[[:alnum:]]+)$/
+        ext = format_override ? "_tmp.#{format_override}" : '_tmp\1'
+        tmp_name = current_path.sub(ext_regex, ext)
+        opts = write_opts.dup
+        opts.delete(:Q) unless write_jpeg?(tmp_name)
+        @_vimage.write_to_file(tmp_name, **opts)
         FileUtils.mv(tmp_name, current_path)
         @_vimage = nil
       end
       ret
     end
 
+    def filename
+      return unless original_filename
+      format_override ? original_filename.sub(/\.[[:alnum:]]+$/, ".#{format_override}") : original_filename
+    end
+
   private
+
+    attr_accessor :format_override
+
+    def get_image
+      cache_stored_file! unless cached?
+      @_vimage ||= if jpeg? || png?
+                     ::Vips::Image.new_from_file(current_path, access: :sequential)
+                   else
+                     ::Vips::Image.new_from_file(current_path)
+                   end
+    end
+
+    def write_opts
+      @_write_opts ||= {}
+    end
 
     def resize_image(image, width, height, min_or_max = :min)
       ratio = get_ratio image, width, height, min_or_max
@@ -249,11 +263,20 @@ module CarrierWave
     end
 
     def jpeg?(path = current_path)
-      path =~ /.*jpg$/i or path =~ /.*jpeg$/i
+      %w(jgp jpeg).include? ext(path)
     end
 
     def png?(path = current_path)
-      path =~ /.*png$/i
+      ext(path) == 'png'
+    end
+
+    def write_jpeg?(path)
+      format_override == 'jpg' || jpeg?(path)
+    end
+
+    def ext(path)
+      matches = /\.([[:alnum:]]+)$/.match(path)
+      matches && matches[1].downcase
     end
 
   end # Vips

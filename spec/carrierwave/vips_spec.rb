@@ -4,20 +4,18 @@ require 'spec_helper'
 require 'carrierwave-vips'
 
 def create_instance(file = 'landscape.jpg')
-  klass = Class.new do
-    include CarrierWave::Uploader::Processing
+  klass = Class.new(CarrierWave::Uploader::Base) {
     include CarrierWave::Vips
-  end
+  }
   file_copy = file.split('.').insert(-2, 'copy').join('.')
   instance = klass.new
   FileUtils.cp(file_path(file), file_path(file_copy))
-  allow(instance).to receive(:current_path).and_return(file_path(file_copy))
-  allow(instance).to receive(:enable_processing).and_return(true)
-  allow(instance).to receive(:cached?).and_return(true)
+  allow(instance).to receive(:file).and_return(CarrierWave::SanitizedFile.new(file_path(file_copy)))
   instance
 end
 
 class ImageUploader < CarrierWave::Uploader::Base
+
   include CarrierWave::Vips
 
   version :big_thumb do
@@ -50,33 +48,37 @@ describe CarrierWave::Vips do
   end
 
   # Gotta figure out how to test this properly.
-  it "performs multiple operations properly"
+  it 'performs multiple operations properly'
 
   describe "#convert" do
-    it "converts from one format to another" do
+
+    it 'converts from one format to another' do
       instance.convert('png')
       instance.process!
+      expect(instance.filename).to match(/png$/)
     end
 
-    it "throws an error on gif" do
+    it 'throws an error on gif' do
       expect { instance.convert('gif') }.to raise_error(ArgumentError)
     end
+    
   end
 
   describe '#resize_to_fill' do
-    it "resizes the image to exactly the given dimensions" do
-      instance.resize_to_fill(200, 200)
+    
+    it 'resizes the image to exactly the given dimensions' do
+      instance.resize_to_fill(200,200)
       instance.process!
       expect(instance).to have_dimensions(200, 200)
     end
 
-    it "scales up the image if it smaller than the given dimensions" do
-      instance.resize_to_fill(1000, 1000)
+    it 'scales up the image if it smaller than the given dimensions' do
+      instance.resize_to_fill(1000,1000)
       instance.process!
       expect(instance).to have_dimensions(1000, 1000)
     end
 
-    it "does not throw error on exact dimensions" do
+    it 'does not throw error on exact dimensions' do
       instance.resize_to_fill(640,480)
       instance.process!
       expect(instance).to have_dimensions(640,480)
@@ -85,43 +87,47 @@ describe CarrierWave::Vips do
   end
 
   describe '#resize_to_fit' do
-    it "resizes the image to fit within the given dimensions" do
+    
+    it 'resizes the image to fit within the given dimensions' do
       instance.resize_to_fit(200, 200)
       instance.process!
       expect(instance).to have_dimensions(200, 150)
     end
 
-    it "scales up the image if it smaller than the given dimensions" do
+    it 'scales up the image if it smaller than the given dimensions' do
       instance.resize_to_fit(1000, 1000)
       instance.process!
       expect(instance).to have_dimensions(1000, 750)
     end
+    
   end
 
   describe '#resize_to_limit' do
-    it "resizes the image to fit within the given dimensions" do
+    
+    it 'resizes the image to fit within the given dimensions' do
       instance.resize_to_limit(200, 200)
       instance.process!
       expect(instance).to have_dimensions(200, 150)
     end
 
-    it "does not scale up the image if it is smaller than the given dimensions" do
+    it 'does not scale up the image if it is smaller than the given dimensions' do
       instance.resize_to_limit(1000, 1000)
       instance.process!
       expect(instance).to have_dimensions(640, 480)
     end
+
   end
 
   describe '#strip' do
 
-    it "strips all exif and icc data from the image" do
+    it 'strips all exif and icc data from the image' do
       instance.strip
       instance.process!
       image = Vips::Image.new_from_file(instance.current_path)
-      expect { image.get_value("exif-ifd0-Software") }.to raise_error(Vips::Error)
+      expect { image.get_value('exif-ifd0-Software') }.to raise_error(Vips::Error)
     end
 
-    it "strips out exif and icc data from images that are being converted" do
+    it 'strips out exif and icc data from images that are being converted' do
       instance.convert('jpeg')
       instance.strip
       instance.process!
