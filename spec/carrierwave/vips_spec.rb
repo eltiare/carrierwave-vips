@@ -84,6 +84,12 @@ describe CarrierWave::Vips do
       expect(instance).to have_dimensions(640,480)
     end
 
+    it 'recovers on floating point errors leading to overcrops' do
+      instance = create_instance('wonky-resize.jpg')
+      instance.resize_to_fill(200,200)
+      instance.process!
+    end
+
   end
 
   describe '#resize_to_fit' do

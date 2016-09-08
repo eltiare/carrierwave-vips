@@ -156,6 +156,11 @@ module CarrierWave
           top = 0
         end
 
+        # Floating point errors can sometimes chop off an extra pixel
+        # TODO: fix all the universe so that floating point errors never happen again
+        new_height = image.height if image.height < new_height
+        new_width = image.width if image.width < new_width
+
         image.extract_area(left, top, new_width, new_height)
 
       end
