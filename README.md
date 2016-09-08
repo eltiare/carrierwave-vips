@@ -14,7 +14,7 @@ Installation
 
     gem install carrierwave-vips
 
-You will also need ruby-vips for VIPS 8. If you need support for VIPS 7 please install a 1.0.x version of this library. For instructions on how to install that see the repo: https://github.com/jcupitt/ruby-vips
+If you need support for VIPS 7 please install a 1.0.x version of this gem. You will also need ruby-vips for VIPS 8.  For instructions on how to install that see the repo: https://github.com/jcupitt/ruby-vips
 
 If you are using bundler, add this to your Gemfile:
 
