@@ -45,6 +45,11 @@ You can use the following methods to change your images.
 
 To see how vips stands up to other image processing libraries, see this benchmark:  https://github.com/stanislaw/carrierwave-vips-benchmarks
 
+Special considerations
+----------------------
+
+If you use `convert` this library overrides the `filename` method used by CarrierWave to give the proper extension to the upload. If you want to override this method yourself, you can use the `format_override` method to get the file extension. 
+
 Libraries which rely on CarrierWave-VIPS
 ---------------------
 * The carrierwave-daltonize gem corrects images for color-blindness: https://github.com/gingerlime/carrierwave-daltonize
