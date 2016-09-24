@@ -268,7 +268,7 @@ module CarrierWave
     end
 
     def jpeg?(path = current_path)
-      %w(jgp jpeg).include? ext(path)
+      %w(jpg jpeg).include? ext(path)
     end
 
     def png?(path = current_path)
