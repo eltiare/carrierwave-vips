@@ -10,9 +10,9 @@ GIT
 PATH
   remote: .
   specs:
-    carrierwave-vips (1.1.0)
-      carrierwave
-      ruby-vips (~> 1.0.2)
+    carrierwave-vips (1.1.2)
+      carrierwave (>= 0.11.0)
+      ruby-vips (~> 1.0, >= 1.0.2)
 
 GEM
   remote: https://rubygems.org/
