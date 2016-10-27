@@ -3,13 +3,16 @@
 module CarrierWave
   module Vips
 
-    SHARPEN_MASK = begin
-      conv_mask = [
-        [ -1, -1, -1 ],
-        [ -1, 24, -1 ],
-        [ -1, -1, -1 ]
-      ]
-      ::Vips::Image.new_from_array conv_mask, 16
+    def self.configure
+      @config ||= begin
+        c = Struct.new(:sharpen_mask, :sharpen_scale).new
+        c.sharpen_mask = [ [ -1, -1, -1 ], [ -1, 24, -1 ], [ -1, -1, -1 ] ]
+        c.sharpen_scale = 16
+        c
+      end
+      @config
+      yield @config if block_given?
+      @config
     end
 
     def self.included(base)
@@ -256,7 +259,7 @@ module CarrierWave
         image = image.resize(ratio, kernel: :nearest)
       else
         image = image.resize(ratio, kernel: :cubic)
-        image = image.conv SHARPEN_MASK
+        image = image.conv(cwv_sharpen_mask) if cwv_config.sharpen_mask
       end
       image
     end
@@ -282,6 +285,14 @@ module CarrierWave
     def ext(path)
       matches = /\.([[:alnum:]]+)$/.match(path)
       matches && matches[1].downcase
+    end
+
+    def cwv_config
+      CarrierWave::Vips.configure
+    end
+
+    def cwv_sharpen_mask(mask = cwv_config.sharpen_mask, scale = cwv_config.sharpen_scale)
+      ::Vips::Image.new_from_array(mask, scale)
     end
 
   end # Vips

@@ -45,6 +45,25 @@ You can use the following methods to change your images.
 
 To see how vips stands up to other image processing libraries, see this benchmark:  https://github.com/stanislaw/carrierwave-vips-benchmarks
 
+Configuration
+-------------
+
+When reducing the size of images, a sharpening mask is used. To change or disable this behavior:
+
+```
+CarrierWave::Vips.configure do |c|
+  c.sharpen_mask = false  # Disable sharpening mask on image reduction
+  c.sharpen_mask = [      # Default mask
+    [ -1, -1, -1 ], 
+    [ -1, 24, -1 ], 
+    [ -1, -1, -1 ] 
+  ]
+  c.sharpen_scale = 16     
+end
+```
+
+See VIPS::Image.new_from_array for more information on what these two do. 
+
 Special considerations
 ----------------------
 
