@@ -32,6 +32,10 @@ module CarrierWave
         process :resize_to_fill => [width, height]
       end
 
+      def resize_and_pad(width, height, options)
+        process :resize_and_pad => [width, height, options]
+      end
+
       def quality(percent)
         process :quality => percent
       end
@@ -184,6 +188,25 @@ module CarrierWave
       manipulate! do |image|
         image = resize_image(image,new_width,new_height) if new_width < image.width || new_height < image.height
         image
+      end
+    end
+
+    ##
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio, padding the image to keep the input dimensions.
+    # The resulting image is centered, the default background color is black (see options).
+    #
+    #
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    # [opts (Hash)] options to be passed to extending function (ie, :background => [200, 0, 100])
+    #
+    def resize_and_pad(new_width, new_height, opts = {})
+      manipulate! do |image|
+        image = resize_image(image,new_width,new_height)
+        image.embed ( new_width - image.width ) / 2, ( new_height - image.height ) / 2, new_width, new_height, opts
       end
     end
 
