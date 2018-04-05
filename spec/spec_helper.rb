@@ -10,6 +10,7 @@ require 'logger'
 require 'active_record'
 require 'carrierwave'
 require 'carrierwave/orm/activerecord'
+require 'mini_magick' # for CarrierWave test matchers
 
 
 ActiveRecord::Base.establish_connection( adapter:  'sqlite3', database: ':memory:' )

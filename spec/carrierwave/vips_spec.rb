@@ -3,6 +3,8 @@
 require 'spec_helper'
 require 'carrierwave-vips'
 
+Vips.vips_cache_set_max 0 # prevent caching
+
 def create_instance(file = 'landscape.jpg')
   klass = Class.new(CarrierWave::Uploader::Base) {
     include CarrierWave::Vips
@@ -56,10 +58,6 @@ describe CarrierWave::Vips do
       instance.convert('png')
       instance.process!
       expect(instance.filename).to match(/png$/)
-    end
-
-    it 'throws an error on gif' do
-      expect { instance.convert('gif') }.to raise_error(ArgumentError)
     end
     
   end
@@ -150,9 +148,6 @@ describe CarrierWave::Vips do
     end
 
     it 'orients properly with related tags' do
-      instance = create_instance('landscape-with-orientation.jpg')
-      instance.auto_orient
-      instance.process!
       instance = create_instance('portrait-with-orientation.jpg')
       instance.auto_orient
       instance.process!
