@@ -19,7 +19,7 @@ If you need support for VIPS 7 please install a 1.0.x version of this gem. You w
 If you are using bundler, add this to your Gemfile:
 
     gem 'carrierwave-vips'
-    
+
 You will need to install the `rmagick` gem if you want to load GIF files. Writing GIFs is not supported by ruby-vips or this library.
 
 
@@ -54,20 +54,33 @@ When reducing the size of images, a sharpening mask is used. To change or disabl
 CarrierWave::Vips.configure do |c|
   c.sharpen_mask = false  # Disable sharpening mask on image reduction
   c.sharpen_mask = [      # Default mask
-    [ -1, -1, -1 ], 
-    [ -1, 24, -1 ], 
-    [ -1, -1, -1 ] 
+    [ -1, -1, -1 ],
+    [ -1, 24, -1 ],
+    [ -1, -1, -1 ]
   ]
-  c.sharpen_scale = 16     
+  c.sharpen_scale = 16
 end
 ```
 
-See VIPS::Image.new_from_array for more information on what these two do. 
+See VIPS::Image.new_from_array for more information on what these two do.
+
+### Resizing kernels
+
+To customize vips resizing kernel used when resizing images, use the following options:
+
+```
+CarrierWave::Vips.configure do |c|
+  c.enlarging_kernel = :nearest # Default kernel used when enlarging images
+  c.shrinking_kernel = :cubic  # Default kernel used when shrinking images
+end
+```
+
+See [Vips::Kernel](https://www.rubydoc.info/gems/ruby-vips/Vips/Kernel) for available options.
 
 Special considerations
 ----------------------
 
-If you use `convert` this library overrides the `filename` method used by CarrierWave to give the proper extension to the upload. If you want to override this method yourself, you can use the `format_override` method to get the file extension. 
+If you use `convert` this library overrides the `filename` method used by CarrierWave to give the proper extension to the upload. If you want to override this method yourself, you can use the `format_override` method to get the file extension.
 
 Libraries which rely on CarrierWave-VIPS
 ---------------------

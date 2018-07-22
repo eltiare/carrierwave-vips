@@ -5,9 +5,12 @@ module CarrierWave
 
     def self.configure
       @config ||= begin
-        c = Struct.new(:sharpen_mask, :sharpen_scale).new
+        config_params = [:sharpen_mask, :sharpen_scale, :enlarging_kernel, :shrinking_kernel]
+        c = Struct.new(*config_params).new
         c.sharpen_mask = [ [ -1, -1, -1 ], [ -1, 24, -1 ], [ -1, -1, -1 ] ]
         c.sharpen_scale = 16
+        c.enlarging_kernel = :nearest
+        c.shrinking_kernel = :cubic
         c
       end
       @config
@@ -256,9 +259,9 @@ module CarrierWave
       ratio = get_ratio image, width, height, min_or_max
       return image if ratio == 1
       if ratio > 1
-        image = image.resize(ratio, kernel: :nearest)
+        image = image.resize(ratio, kernel: cwv_config.enlarging_kernel)
       else
-        image = image.resize(ratio, kernel: :cubic)
+        image = image.resize(ratio, kernel: cwv_config.shrinking_kernel)
         image = image.conv(cwv_sharpen_mask) if cwv_config.sharpen_mask
       end
       image
