@@ -38,9 +38,9 @@ end
 
 
 describe CarrierWave::Vips do
-  
+
   let(:instance) { create_instance }
-  
+
   after do
     Dir[file_path('*.copy.jpg')].each do |file|
       FileUtils.rm(file)
@@ -61,11 +61,11 @@ describe CarrierWave::Vips do
     it 'throws an error on gif' do
       expect { instance.convert('gif') }.to raise_error(ArgumentError)
     end
-    
+
   end
 
   describe '#resize_to_fill' do
-    
+
     it 'resizes the image to exactly the given dimensions' do
       instance.resize_to_fill(200,200)
       instance.process!
@@ -93,7 +93,7 @@ describe CarrierWave::Vips do
   end
 
   describe '#resize_to_fit' do
-    
+
     it 'resizes the image to fit within the given dimensions' do
       instance.resize_to_fit(200, 200)
       instance.process!
@@ -105,11 +105,11 @@ describe CarrierWave::Vips do
       instance.process!
       expect(instance).to have_dimensions(1000, 750)
     end
-    
+
   end
 
   describe '#resize_to_limit' do
-    
+
     it 'resizes the image to fit within the given dimensions' do
       instance.resize_to_limit(200, 200)
       instance.process!
@@ -181,6 +181,27 @@ describe CarrierWave::Vips do
       }
     end
 
+  end
+
+
+  describe '#configure' do
+    let(:test_sharpen_mask) { [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ] }
+
+    before do
+      CarrierWave::Vips.configure do |c|
+        c.sharpen_scale = 1
+        c.sharpen_mask = test_sharpen_mask
+        c.enlarging_kernel = :lanczos3
+        c.shrinking_kernel = :lanczos2
+      end
+    end
+
+    it 'sets given configuration values' do
+      expect(instance.send(:cwv_config).sharpen_scale).to eq 1
+      expect(instance.send(:cwv_config).sharpen_mask).to eq test_sharpen_mask
+      expect(instance.send(:cwv_config).enlarging_kernel).to eq :lanczos3
+      expect(instance.send(:cwv_config).shrinking_kernel).to eq :lanczos2
+    end
   end
 
 end
