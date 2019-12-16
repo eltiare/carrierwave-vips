@@ -5,9 +5,10 @@ module CarrierWave
 
     def self.configure
       @config ||= begin
-        c = Struct.new(:sharpen_mask, :sharpen_scale).new
+        c = Struct.new(:sharpen_mask, :sharpen_scale, :allowed_formats).new
         c.sharpen_mask = [ [ -1, -1, -1 ], [ -1, 24, -1 ], [ -1, -1, -1 ] ]
         c.sharpen_scale = 16
+        c.allowed_formats = %w(jpeg jpg png)
         c
       end
       @config
@@ -106,7 +107,7 @@ module CarrierWave
     def convert(f, opts = {})
       opts = opts.dup
       f = f.to_s.downcase
-      allowed = %w(jpeg jpg png)
+      allowed = cwv_config.allowed_formats
       raise ArgumentError, "Format must be one of: #{allowed.join(',')}" unless allowed.include?(f)
       self.format_override = f == 'jpeg' ? 'jpg' : f
       opts[:Q] = opts.delete(:quality) if opts.has_key?(:quality)
