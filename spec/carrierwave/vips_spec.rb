@@ -61,7 +61,32 @@ describe CarrierWave::Vips do
     it 'throws an error on gif' do
       expect { instance.convert('gif') }.to raise_error(ArgumentError)
     end
-    
+
+    context 'when allowed formats are configured' do
+      around do |example|
+        original_formats = CarrierWave::Vips.configure.allowed_formats
+        example.run
+      ensure
+        CarrierWave::Vips.configure { |c| c.allowed_formats = original_formats }
+      end
+
+      context 'when a file format is allowed' do
+        before { CarrierWave::Vips.configure { |c| c.allowed_formats = %w(webp) } }
+
+        it 'does not raise an error' do
+          expect { instance.convert('webp') }.not_to raise_error
+        end
+      end
+
+      context 'when a file format is not allowed' do
+        before { CarrierWave::Vips.configure { |c| c.allowed_formats = %w(jpg) } }
+
+        it 'blows up' do
+          expect { instance.convert('png') }.to raise_error(ArgumentError)
+        end
+      end
+    end
+
   end
 
   describe '#resize_to_fill' do
