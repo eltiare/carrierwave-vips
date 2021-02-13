@@ -19,7 +19,7 @@ class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::Vips
 
   version :big_thumb do
-    process :resize_to_fill => [800,800]
+    process :resize_to_fill => [800, 800]
   end
 
   version :thumb do
@@ -38,11 +38,11 @@ end
 
 
 describe CarrierWave::Vips do
-  
+
   let(:instance) { create_instance }
-  
+
   after do
-    Dir[file_path('*.copy.jpg')].each do |file|
+    Dir[file_path('*.copy.{jpg,gif}')].each do |file|
       FileUtils.rm(file)
     end
   end
@@ -50,16 +50,12 @@ describe CarrierWave::Vips do
   # Gotta figure out how to test this properly.
   it 'performs multiple operations properly'
 
-  describe "#convert" do
+  describe '#convert' do
 
     it 'converts from one format to another' do
       instance.convert('png')
       instance.process!
       expect(instance.filename).to match(/png$/)
-    end
-
-    it 'throws an error on gif' do
-      expect { instance.convert('gif') }.to raise_error(ArgumentError)
     end
 
     context 'when allowed formats are configured' do
@@ -90,51 +86,83 @@ describe CarrierWave::Vips do
   end
 
   describe '#resize_to_fill' do
-    
+
     it 'resizes the image to exactly the given dimensions' do
-      instance.resize_to_fill(200,200)
+      instance.resize_to_fill(200, 200)
       instance.process!
       expect(instance).to have_dimensions(200, 200)
     end
 
-    it 'scales up the image if it smaller than the given dimensions' do
-      instance.resize_to_fill(1000,1000)
+    it 'scales up the image if it is smaller than the given dimensions' do
+      instance.resize_to_fill(1000, 1000)
       instance.process!
       expect(instance).to have_dimensions(1000, 1000)
     end
 
     it 'does not throw error on exact dimensions' do
-      instance.resize_to_fill(640,480)
+      instance.resize_to_fill(640, 480)
       instance.process!
-      expect(instance).to have_dimensions(640,480)
+      expect(instance).to have_dimensions(640, 480)
     end
 
     it 'recovers on floating point errors leading to overcrops' do
       instance = create_instance('wonky-resize.jpg')
-      instance.resize_to_fill(200,200)
+      instance.resize_to_fill(200, 200)
       instance.process!
+    end
+
+    describe 'gif' do
+      let(:instance) { create_instance('ani.gif') }
+
+      it 'resizes the frames' do
+        instance.resize_to_fill(200, 200)
+        instance.process!
+        expect(instance).to have_dimensions(200, 200)
+      end
+
+      it 'scales up the image if it is smaller than the given dimensions' do
+        instance.resize_to_fill(960, 960)
+        instance.process!
+        expect(instance).to have_dimensions(960, 960)
+      end
     end
 
   end
 
   describe '#resize_to_fit' do
-    
+
     it 'resizes the image to fit within the given dimensions' do
       instance.resize_to_fit(200, 200)
       instance.process!
       expect(instance).to have_dimensions(200, 150)
     end
 
-    it 'scales up the image if it smaller than the given dimensions' do
+    it 'scales up the image if it is smaller than the given dimensions' do
       instance.resize_to_fit(1000, 1000)
       instance.process!
       expect(instance).to have_dimensions(1000, 750)
     end
-    
+
+    describe 'gif' do
+      let(:instance) { create_instance('ani.gif') }
+
+      it 'resizes the frames' do
+        instance.resize_to_fit(240, 240)
+        instance.process!
+        expect(instance).to have_dimensions(240, 135)
+      end
+
+      it 'scales up the image if it is smaller than the given dimensions' do
+        instance.resize_to_fit(960, 960)
+        instance.process!
+        expect(instance).to have_dimensions(960, 540)
+      end
+    end
+
   end
 
   describe '#resize_to_limit' do
-    
+
     it 'resizes the image to fit within the given dimensions' do
       instance.resize_to_limit(200, 200)
       instance.process!
@@ -145,6 +173,22 @@ describe CarrierWave::Vips do
       instance.resize_to_limit(1000, 1000)
       instance.process!
       expect(instance).to have_dimensions(640, 480)
+    end
+
+    describe 'gif' do
+      let(:instance) { create_instance('ani.gif') }
+
+      it 'resizes the frames' do
+        instance.resize_to_limit(200, 200)
+        instance.process!
+        expect(instance).to have_dimensions(200, 113)
+      end
+
+      it 'does not scale up the image if it is smaller than the given dimensions' do
+        instance.resize_to_limit(1000, 1000)
+        instance.process!
+        expect(instance).to have_dimensions(480, 270)
+      end
     end
 
   end

@@ -8,7 +8,7 @@ module CarrierWave
         c = Struct.new(:sharpen_mask, :sharpen_scale, :allowed_formats).new
         c.sharpen_mask = [ [ -1, -1, -1 ], [ -1, 24, -1 ], [ -1, -1, -1 ] ]
         c.sharpen_scale = 16
-        c.allowed_formats = %w(jpeg jpg png)
+        c.allowed_formats = %w(jpeg jpg png gif)
         c
       end
       @config
@@ -129,7 +129,7 @@ module CarrierWave
     #
     def resize_to_fit(new_width, new_height)
       manipulate! do |image|
-        resize_image(image,new_width,new_height)
+        resize_image(image, new_width, new_height)
       end
     end
 
@@ -146,27 +146,20 @@ module CarrierWave
     #
     def resize_to_fill(new_width, new_height)
       manipulate! do |image|
+        if gif?
+          page_height = image.get 'page-height'
+          frame_count = image.height / page_height
+          frames = frame_count.times.map do |i|
+            frame = image.crop(0, i * page_height, image.width, page_height)
+            _resize_to_fill(frame, new_width, new_height)
+          end
+          new_image = ::Vips::Image.arrayjoin(frames, across: 1)
+          new_image.set('page-height', new_height)
 
-        image = resize_image image, new_width, new_height, :max
-
-        if image.width > new_width
-          top = 0
-          left = (image.width - new_width) / 2
-        elsif image.height > new_height
-          left = 0
-          top = (image.height - new_height) / 2
+          new_image
         else
-          left = 0
-          top = 0
+          _resize_to_fill(image, new_width, new_height)
         end
-
-        # Floating point errors can sometimes chop off an extra pixel
-        # TODO: fix all the universe so that floating point errors never happen again
-        new_height = image.height if image.height < new_height
-        new_width = image.width if image.width < new_width
-
-        image.extract_area(left, top, new_width, new_height)
-
       end
     end
 
@@ -183,7 +176,8 @@ module CarrierWave
     #
     def resize_to_limit(new_width, new_height)
       manipulate! do |image|
-        image = resize_image(image,new_width,new_height) if new_width < image.width || new_height < image.height
+        image_height = get_image_height image
+        image = resize_image(image, new_width, new_height) if new_width < image.width || new_height < image_height
         image
       end
     end
@@ -244,6 +238,8 @@ module CarrierWave
       cache_stored_file! unless cached?
       @_vimage ||= if jpeg? || png?
                      ::Vips::Image.new_from_file(current_path, access: :sequential)
+                   elsif gif?
+                     ::Vips::Image.new_from_file(current_path, n: -1)
                    else
                      ::Vips::Image.new_from_file(current_path)
                    end
@@ -254,20 +250,70 @@ module CarrierWave
     end
 
     def resize_image(image, width, height, min_or_max = :min)
+      if gif?
+        page_height = image.get 'page-height'
+        frame_count = image.height / page_height
+        frames = frame_count.times.map do |i|
+          frame = image.crop(0, i * page_height, image.width, page_height)
+          _resize_image(frame, width, height, min_or_max)
+        end
+
+        new_image = ::Vips::Image.arrayjoin(frames, across: 1)
+        ratio = get_ratio image, width, height, min_or_max
+        new_image.set('page-height', (page_height * ratio).round)
+
+        new_image
+      else
+        _resize_image(image, width, height, min_or_max)
+      end
+    end
+
+    def _resize_image(image, width, height, min_or_max = :min)
       ratio = get_ratio image, width, height, min_or_max
       return image if ratio == 1
       if ratio > 1
         image = image.resize(ratio, kernel: :nearest)
       else
         image = image.resize(ratio, kernel: :cubic)
-        image = image.conv(cwv_sharpen_mask) if cwv_config.sharpen_mask
+        image = image.conv(cwv_sharpen_mask) if cwv_config.sharpen_mask && !gif?
       end
       image
     end
 
-    def get_ratio(image, width,height, min_or_max = :min)
+    def _resize_to_fill(image, new_width, new_height)
+      image = _resize_image image, new_width, new_height, :max
+
+      if image.width > new_width
+        top = 0
+        left = (image.width - new_width) / 2
+      elsif image.height > new_height
+        left = 0
+        top = (image.height - new_height) / 2
+      else
+        left = 0
+        top = 0
+      end
+
+      # Floating point errors can sometimes chop off an extra pixel
+      # TODO: fix all the universe so that floating point errors never happen again
+      new_height = image.height if image.height < new_height
+      new_width = image.width if image.width < new_width
+
+      image.extract_area(left, top, new_width, new_height)
+    end
+
+    def get_image_height(image)
+      if gif?
+        image.get 'page-height'
+      else
+        image.height
+      end
+    end
+
+    def get_ratio(image, width, height, min_or_max = :min)
+      image_height = get_image_height image
       width_ratio = width.to_f / image.width
-      height_ratio = height.to_f / image.height
+      height_ratio = height.to_f / image_height
       [width_ratio, height_ratio].send(min_or_max)
     end
 
@@ -277,6 +323,10 @@ module CarrierWave
 
     def png?(path = current_path)
       ext(path) == 'png'
+    end
+
+    def gif?(path = current_path)
+      ext(path) == 'gif'
     end
 
     def write_jpeg?(path)
