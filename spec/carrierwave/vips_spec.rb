@@ -111,6 +111,12 @@ describe CarrierWave::Vips do
       instance.process!
     end
 
+    it 'accepts a nil value for width or height' do
+      instance.resize_to_fill(200, nil)
+      instance.process!
+      expect(instance).to have_dimensions(200, 150)
+    end
+
     describe 'gif' do
       let(:instance) { create_instance('ani.gif') }
 
@@ -143,6 +149,12 @@ describe CarrierWave::Vips do
       expect(instance).to have_dimensions(1000, 750)
     end
 
+    it 'accepts a nil value for width or height' do
+      instance.resize_to_fit(nil, 150)
+      instance.process!
+      expect(instance).to have_dimensions(200, 150)
+    end
+
     describe 'gif' do
       let(:instance) { create_instance('ani.gif') }
 
@@ -173,6 +185,12 @@ describe CarrierWave::Vips do
       instance.resize_to_limit(1000, 1000)
       instance.process!
       expect(instance).to have_dimensions(640, 480)
+    end
+
+    it 'accepts a nil value for width or height' do
+      instance.resize_to_limit(200, nil)
+      instance.process!
+      expect(instance).to have_dimensions(200, 150)
     end
 
     describe 'gif' do

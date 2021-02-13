@@ -176,8 +176,8 @@ module CarrierWave
     #
     def resize_to_limit(new_width, new_height)
       manipulate! do |image|
-        image_height = get_image_height image
-        image = resize_image(image, new_width, new_height) if new_width < image.width || new_height < image_height
+        ratio = get_ratio image, new_width, new_height, :min
+        image = resize_image(image, new_width, new_height) if ratio < 1
         image
       end
     end
@@ -283,10 +283,10 @@ module CarrierWave
     def _resize_to_fill(image, new_width, new_height)
       image = _resize_image image, new_width, new_height, :max
 
-      if image.width > new_width
+      if new_width && image.width > new_width
         top = 0
         left = (image.width - new_width) / 2
-      elsif image.height > new_height
+      elsif new_height && image.height > new_height
         left = 0
         top = (image.height - new_height) / 2
       else
@@ -296,8 +296,8 @@ module CarrierWave
 
       # Floating point errors can sometimes chop off an extra pixel
       # TODO: fix all the universe so that floating point errors never happen again
-      new_height = image.height if image.height < new_height
-      new_width = image.width if image.width < new_width
+      new_height = image.height if new_height.nil? || image.height < new_height
+      new_width = image.width if new_width.nil? || image.width < new_width
 
       image.extract_area(left, top, new_width, new_height)
     end
@@ -312,6 +312,10 @@ module CarrierWave
 
     def get_ratio(image, width, height, min_or_max = :min)
       image_height = get_image_height image
+
+      return width.to_f / image.width if height.nil?
+      return height.to_f / image_height if width.nil?
+
       width_ratio = width.to_f / image.width
       height_ratio = height.to_f / image_height
       [width_ratio, height_ratio].send(min_or_max)
