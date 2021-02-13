@@ -20,9 +20,6 @@ If you are using bundler, add this to your Gemfile:
 
     gem 'carrierwave-vips'
     
-You will need to install the `rmagick` gem if you want to load GIF files. Writing GIFs is not supported by ruby-vips or this library.
-
-
 A quick overview
 ---------------------
 
