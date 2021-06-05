@@ -5,10 +5,11 @@ module CarrierWave
 
     def self.configure
       @config ||= begin
-        c = Struct.new(:sharpen_mask, :sharpen_scale, :allowed_formats).new
+        c = Struct.new(:sharpen_mask, :sharpen_scale, :allowed_formats, :image_read_access).new
         c.sharpen_mask = [ [ -1, -1, -1 ], [ -1, 24, -1 ], [ -1, -1, -1 ] ]
         c.sharpen_scale = 16
         c.allowed_formats = %w(jpeg jpg png)
+        c.image_read_access = :sequential
         c
       end
       @config
@@ -243,7 +244,7 @@ module CarrierWave
     def get_image
       cache_stored_file! unless cached?
       @_vimage ||= if jpeg? || png?
-                     ::Vips::Image.new_from_file(current_path, access: :sequential)
+                     ::Vips::Image.new_from_file(current_path, access: cwv_config.image_read_access)
                    else
                      ::Vips::Image.new_from_file(current_path)
                    end
