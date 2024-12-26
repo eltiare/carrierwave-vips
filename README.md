@@ -1,7 +1,13 @@
 CarrierWave-VIPS
 ======================
 
-[![Build Status](https://secure.travis-ci.org/eltiare/carrierwave-vips.png?branch=master)](http://travis-ci.org/eltiare/carrierwave-vips)
+This project has been archived. CarrierWave now has first-class support for VIPS: https://github.com/carrierwaveuploader/carrierwave#using-vips
+
+The original instructions are below for anyone still reliant on this library. You are encouraged to update to the built 
+in methods instead of this code. 
+
+-------------------------------------------------------------
+
 
 Debian does not have a library for VIPS 8 yet. As soon as I can work out how to get it in a Travis build the tests should pass. In the meantime you can clone this repo yourself and run `rspec` in the base directory.
 
